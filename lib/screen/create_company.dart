@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../model/company.dart';
+import 'package:restapi_crud/widgets/custom_button.dart';
+import 'package:restapi_crud/model/company.dart';
 
 class CreateCompany extends StatefulWidget {
   final Company? company;
@@ -18,9 +19,9 @@ class _CreateCompanyState extends State<CreateCompany> {
   @override
   void initState() {
     if (widget.company != null) {
-      _nameController.text = widget.company!.companyName!;
-      _addressController.text = widget.company!.companyAddress!;
-      _phoneController.text = widget.company!.companyNumber!;
+      _nameController.text = widget.company!.companyName;
+      _addressController.text = widget.company!.companyAddress;
+      _phoneController.text = widget.company!.companyNumber;
     }
     super.initState();
   }
@@ -44,6 +45,7 @@ class _CreateCompanyState extends State<CreateCompany> {
                     if (value!.isEmpty) {
                       return "Please enter company name";
                     }
+                    return null;
                   },
                   controller: _nameController,
                   decoration: const InputDecoration(
@@ -72,35 +74,10 @@ class _CreateCompanyState extends State<CreateCompany> {
                       border: OutlineInputBorder()),
                 ),
               ),
-              /*
-              ElevatedButton(
-                  onPressed: () async {
-                    if (_key.currentState!.validate()) {
-                      Company newCompany = Company(
-                          companyName: _nameController.text,
-                          companyAddress: _addressController.text,
-                          companyNumber: _phoneController.text,
-                          companyLogo: "https://logo.clearbit.com/godaddy.com", id: 1);
-
-                      if (widget.company != null) {
-                        await CompanyService()
-                            .updateCompany(newCompany, widget.company!.id!);
-                      } else {
-                        await CompanyService().createCompany(newCompany);
-                      }
-
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text("Company added successfully"),
-                        ),
-                      );
-
-                      Navigator.pop(context);
-                    }
-                  },
-                  child: Text(widget.company == null
-                      ? "Create Company"
-                      : "Update Company"))*/
+              CustomButton(
+                text: widget.company == null ? "Create Company" : "Update Company",   
+                onPressed: (){},
+              ),
             ],
           ),
         ),
