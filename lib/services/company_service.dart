@@ -1,112 +1,82 @@
 import 'dart:convert';
 import 'dart:developer';
-
-import 'package:restapi_crud/model/company.dart';
 import 'package:http/http.dart' as http;
+import 'package:restapi_crud/model/company.dart';
 
-class CompanyService {
-  String baseUrl = "https://retoolapi.dev/4mRvYN/";
+const String baseUrl = "https://retoolapi.dev/0KqRcK/company";
 
-  getAllCompanies() async {
-    try {
-      List<Company> allCompanies = [];
-      var response = await http.get(Uri.parse(baseUrl + 'company'));
-
-      if (response.statusCode == 200) {
-        var data = response.body;
-
-        var jsonData = jsonDecode(data);
-
-        print(jsonData);
-
-        for (var company in jsonData) {
-          Company newCompnay = Company.fromJson(company);
-          allCompanies.add(newCompnay);
-        }
-
-        return allCompanies;
-      } else {
-        throw Exception(
-            "Error occured with status code ${response.statusCode} and the message is ${response.body}");
-      }
-    } catch (e) {
-      print("Error occured: ${e.toString()}");
+Future<List<Company>?> getAllCompanies() async {
+  try {
+    final response = await http.get(Uri.parse(baseUrl));
+    
+    if (response.statusCode == 200) {
+      List<dynamic> jsonData = jsonDecode(response.body);
+      return jsonData.map((company) => Company.fromJson(company)).toList();
     }
+    return null;
+  } catch (e) {
+    log("Error fetching companies: $e");
+    return null;
   }
+}
 
-  createCompany(Company company) async {
-    log("create company is called");
-    try {
-      var response = await http.post(Uri.parse(baseUrl + 'company'),
-          body: company.toJson());
+Future<Company?> createCompany(Company company) async {
+  try {
+    final response = await http.post(
+      Uri.parse(baseUrl),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(company.toJson()),
+    );
 
-      log("The response is ${response.body}");
-
-      if (response.statusCode == 201 || response.statusCode == 200) {
-        print(
-            "The company is suceesfully created with the following details:  ${response.body}");
-      } else {
-        throw Exception(
-            "Error occured with status code ${response.statusCode} and the message is ${response.body}");
-      }
-    } catch (e) {
-      print("Error occured: ${e.toString()}");
+    if (response.statusCode == 201 || response.statusCode == 200) {
+      return Company.fromJson(jsonDecode(response.body));
     }
+    return null;
+  } catch (e) {
+    log("Error creating company: $e");
+    return null;
   }
+}
 
-  updateCompanyPartially(Map<String, dynamic> updatedData, int id)async{
+Future<Company?> updateCompany(int id, Company company) async {
+  try {
+    final response = await http.put(
+      Uri.parse("$baseUrl/$id"),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(company.toJson()),
+    );
 
-    try {
-      var response = await http.patch(Uri.parse(baseUrl + 'company' + '/$id'), body: updatedData);
-
-      log("the responses status code os ${response.statusCode}");
-
-      if (response.statusCode == 201 || response.statusCode == 200) {
-        print(
-            "The company is suceesfully deleted with the following details:  ${response.body}");
-      } else {
-        throw Exception(
-            "Error occured with status code ${response.statusCode} and the message is ${response.body}");
-      }
-    } catch (e) {
-      print("Error occured: ${e.toString()}");
+    if (response.statusCode == 200) {
+      return Company.fromJson(jsonDecode(response.body));
     }
-
-
-
+    return null;
+  } catch (e) {
+    log("Error updating company: $e");
+    return null;
   }
+}
 
-  updateCompany(Company company, int id) async {
-    try {
-      var response = await http.put(Uri.parse(baseUrl + 'company' + '/$id'), body: company.toJson());
+Future<bool> updateCompanyPartially(int id, Map<String, dynamic> updatedData) async {
+  try {
+    final response = await http.patch(
+      Uri.parse("$baseUrl/$id"),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(updatedData),
+    );
 
-      log("the responses status code os ${response.statusCode}");
-
-      if (response.statusCode == 201 || response.statusCode == 200) {
-        print(
-            "The company is suceesfully deleted with the following details:  ${response.body}");
-      } else {
-        throw Exception(
-            "Error occured with status code ${response.statusCode} and the message is ${response.body}");
-      }
-    } catch (e) {
-      print("Error occured: ${e.toString()}");
-    }
+    return response.statusCode == 200;
+  } catch (e) {
+    log("Error updating company partially: $e");
+    return false;
   }
+}
 
-  deleteCompany(int id) async {
-    try {
-      var response = await http.delete(Uri.parse(baseUrl + 'company' + '/$id'));
-
-      if (response.statusCode == 204 || response.statusCode == 200) {
-        print(
-            "The company is suceesfully deleted with the following details:  ${response.body}");
-      } else {
-        throw Exception(
-            "Error occured with status code ${response.statusCode} and the message is ${response.body}");
-      }
-    } catch (e) {
-      print("Error occured: ${e.toString()}");
-    }
+Future<bool> deleteCompany(int id) async {
+  try {
+    final response = await http.delete(Uri.parse("$baseUrl/$id"));
+    return response.statusCode == 204 || response.statusCode == 200;
+  } catch (e) {
+    log("Error deleting company: $e");
+    return false;
   }
 }
