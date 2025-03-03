@@ -1,4 +1,5 @@
-import 'package:restapi_crud/screen/company_screen.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:restapi_crud/screen/homepage.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -12,12 +13,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Rest Api',
+      title: 'Business Info CRUD',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+        textTheme: GoogleFonts.poppinsTextTheme()
       ),
-      home: CompanyScreen(),
+      home: const HomePage(),
     );
   }
 }
