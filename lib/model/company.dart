@@ -1,34 +1,35 @@
 class Company {
-  int? id;
-  String? companyName;
-  String? companyAddress;
-  String? companyNumber;
-  String? companyLogo;
+  final int id;
+  final String companyName;
+  final String companyAddress;
+  final String companyNumber;
+  final String companyLogo;
 
-  Company(
-      {this.companyAddress,
-      this.companyLogo,
-      this.companyName,
-      this.id,
-      this.companyNumber});
+  Company({
+    required this.id,
+    required this.companyAddress,
+    required this.companyLogo,
+    required this.companyName,
+    required this.companyNumber,
+  });
 
-  Company.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    companyName = json['name'];
-    companyAddress = json['address'];
-    companyNumber = json['phone'];
-    companyLogo = json['logo'];
+  factory Company.fromJson(Map<String, dynamic> json) {
+    return Company(
+      id: json['id'] ?? 0, // Default to 0 if null
+      companyName: json['name'] ?? "Unknown Name", // Default to "Unknown Name" if null
+      companyAddress: json['address'] ?? "Unknown Address",
+      companyNumber: json['phone'] ?? "No Phone",
+      companyLogo: json['logo'] ?? "https://logo.clearbit.com/example.com",
+    );
   }
 
   Map<String, dynamic> toJson() {
-    Map<String, dynamic> data = {};
-
-    data['id'] = id;
-    data['name'] = companyName;
-    data['address'] = companyAddress;
-    data['phone'] = companyNumber;
-    data['logo'] = companyLogo;
-
-    return data;
+    return {
+      'id': id,
+      'name': companyName,
+      'address': companyAddress,
+      'phone': companyNumber,
+      'logo': companyLogo,
+    };
   }
 }

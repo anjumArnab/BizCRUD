@@ -1,6 +1,4 @@
-import 'package:restapi_crud/services/company_service.dart';
 import 'package:flutter/material.dart';
-
 import '../model/company.dart';
 
 class CreateCompany extends StatefulWidget {
@@ -74,6 +72,7 @@ class _CreateCompanyState extends State<CreateCompany> {
                       border: OutlineInputBorder()),
                 ),
               ),
+              /*
               ElevatedButton(
                   onPressed: () async {
                     if (_key.currentState!.validate()) {
@@ -81,7 +80,7 @@ class _CreateCompanyState extends State<CreateCompany> {
                           companyName: _nameController.text,
                           companyAddress: _addressController.text,
                           companyNumber: _phoneController.text,
-                          companyLogo: "https://logo.clearbit.com/godaddy.com");
+                          companyLogo: "https://logo.clearbit.com/godaddy.com", id: 1);
 
                       if (widget.company != null) {
                         await CompanyService()
@@ -101,7 +100,7 @@ class _CreateCompanyState extends State<CreateCompany> {
                   },
                   child: Text(widget.company == null
                       ? "Create Company"
-                      : "Update Company"))
+                      : "Update Company"))*/
             ],
           ),
         ),
