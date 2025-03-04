@@ -38,6 +38,21 @@ Future<Company?> createCompany(Company company) async {
   }
 }
 
+Future<List<Company>?> searchCompany(String query) async {
+  try {
+    final response = await http.get(Uri.parse("$baseUrl?companyName=$query"));
+    
+    if (response.statusCode == 200) {
+      List<dynamic> jsonData = jsonDecode(response.body);
+      return jsonData.map((company) => Company.fromJson(company)).toList();
+    }
+    return null;
+  } catch (e) {
+    log("Error searching companies: $e");
+    return null;
+  }
+}
+
 Future<Company?> updateCompany(int id, Company company) async {
   try {
     final response = await http.put(
