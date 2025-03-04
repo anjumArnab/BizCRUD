@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:restapi_crud/screen/homepage.dart';
 import 'package:restapi_crud/widgets/custom_button.dart';
+import 'package:restapi_crud/services/company_service.dart';
 import 'package:restapi_crud/model/company.dart';
 
 class CreateCompany extends StatefulWidget {
@@ -24,6 +26,36 @@ class _CreateCompanyState extends State<CreateCompany> {
       _phoneController.text = widget.company!.companyNumber;
     }
     super.initState();
+  }
+
+  Future<Company?> createOrUpdateCompany() async {
+    if (_key.currentState!.validate()) {
+      Company newCompany = Company(
+        id: widget.company == null ? 0 : widget.company!.id,
+        companyName: _nameController.text,
+        companyAddress: _addressController.text,
+        companyNumber: _phoneController.text,
+        companyLogo: "",
+      );
+
+      Company? result;
+
+      if (widget.company == null) {
+        result = await createCompany(newCompany);
+      } else {
+        result = await updateCompany(newCompany.id, newCompany);
+      }
+
+      if (result != null && context.mounted) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => const HomePage()),
+        );
+      }
+
+      return result;
+    }
+
+    return null;
   }
 
   @override
@@ -75,8 +107,10 @@ class _CreateCompanyState extends State<CreateCompany> {
                 ),
               ),
               CustomButton(
-                text: widget.company == null ? "Create Company" : "Update Company",   
-                onPressed: (){},
+                text: widget.company == null
+                    ? "Create Company"
+                    : "Update Company",
+                onPressed: createOrUpdateCompany,
               ),
             ],
           ),
