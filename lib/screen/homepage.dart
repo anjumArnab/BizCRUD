@@ -37,9 +37,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.purple.shade100,
-        centerTitle: true,
-        title: const Text("Company Information"),
+        title: const Text("Business Info CRUD"),
       ),
       body: FutureBuilder<List<Company>?>(
         future: _companyList,
