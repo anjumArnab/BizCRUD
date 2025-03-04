@@ -26,6 +26,13 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  Future<void> _deleteCompany(int id) async {
+    bool isDeleted = await deleteCompany(id);
+    if (isDeleted) {
+      _refreshCompanyList();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -69,6 +76,7 @@ class _HomePageState extends State<HomePage> {
               return Transform.scale(
                 scale: 1.0,
                 child: GestureDetector(
+                  onLongPress: () => _deleteCompany(company.id),
                   onTap: () {
                     Navigator.push(
                       context,
