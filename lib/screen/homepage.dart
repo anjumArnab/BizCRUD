@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:restapi_crud/model/company.dart';
+import 'package:provider/provider.dart';
+import 'package:restapi_crud/providers/company_providers.dart';
 import 'package:restapi_crud/screen/create_company.dart';
-import 'package:restapi_crud/services/company_service.dart';
 import 'package:restapi_crud/widgets/company_card.dart';
 
 class HomePage extends StatefulWidget {
@@ -12,36 +12,18 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  late Future<List<Company>?> _companyList;
   TextEditingController searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _companyList = getAllCompanies();
-  }
-
-  void _refreshCompanyList() {
-    setState(() {
-      _companyList = getAllCompanies();
-    });
-  }
-
-  Future<void> _deleteCompany(int id) async {
-    bool isDeleted = await deleteCompany(id);
-    if (isDeleted) {
-      _refreshCompanyList();
-    }
-  }
-
-  Future<void> _searchCompany(String query) async {
-    setState(() {
-      _companyList = searchCompany(query);
-    });
+    Provider.of<CompanyProvider>(context, listen: false).fetchCompanies();
   }
 
   @override
   Widget build(BuildContext context) {
+    final companyProvider = Provider.of<CompanyProvider>(context);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("Business Info CRUD"),
@@ -62,76 +44,53 @@ class _HomePageState extends State<HomePage> {
                   borderSide: BorderSide.none,
                 ),
               ),
-              onChanged: (value){
+              onChanged: (value) {
                 if (value.isNotEmpty) {
-                  _searchCompany(value);
+                  companyProvider.searchCompanies(value);
                 } else {
-                  setState(() {
-                    _companyList = getAllCompanies();
-                  });
-              }
+                  companyProvider.fetchCompanies();
+                }
               },
             ),
           ),
-            Expanded(
-              child: FutureBuilder<List<Company>?>(
-                future: _companyList,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-              
-                  if (snapshot.hasError || snapshot.data == null) {
-                    return const Center(
-                      child: Text("Error receiving data from server"),
-                    );
-                  }
-              
-                  List<Company> data = snapshot.data!;
-              
-                  if (data.isEmpty) {
-                    return const Center(
-                      child: Text("No companies available."),
-                    );
-                  }
-              
-                  return GridView.builder(
-                    padding: const EdgeInsets.all(10),
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 5,
-                      mainAxisSpacing: 5,
-                      childAspectRatio: 1,
-                    ),
-                    itemCount: data.length,
-                    itemBuilder: (context, index) {
-                      final company = data[index];
-                      return Transform.scale(
-                        scale: 1.0,
-                        child: GestureDetector(
-                          onLongPress: () => _deleteCompany(company.id),
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => CreateCompany(company: company),
-                              ),
-                            ).then((_) => _refreshCompanyList());
-                          },
-                          child: CompanyCard(
-                            companyLogo: company.companyLogo,
-                            companyName: company.companyName,
-                            companyAddress: company.companyAddress,
-                            companyNumber: company.companyNumber,
+          Expanded(
+            child: companyProvider.isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : companyProvider.errorMessage.isNotEmpty
+                    ? Center(child: Text(companyProvider.errorMessage))
+                    : companyProvider.companies.isEmpty
+                        ? const Center(child: Text("No companies available."))
+                        : GridView.builder(
+                            padding: const EdgeInsets.all(10),
+                            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              crossAxisSpacing: 5,
+                              mainAxisSpacing: 5,
+                              childAspectRatio: 1,
+                            ),
+                            itemCount: companyProvider.companies.length,
+                            itemBuilder: (context, index) {
+                              final company = companyProvider.companies[index];
+                              return GestureDetector(
+                                onLongPress: () => companyProvider.deleteCompanyById(company.id),
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => CreateCompany(company: company),
+                                    ),
+                                  ).then((_) => companyProvider.fetchCompanies());
+                                },
+                                child: CompanyCard(
+                                  companyLogo: company.companyLogo,
+                                  companyName: company.companyName,
+                                  companyAddress: company.companyAddress,
+                                  companyNumber: company.companyNumber,
+                                ),
+                              );
+                            },
                           ),
-                        ),
-                      );
-                    },
-                  );
-                },
-              ),
-            ),
-          
+          ),
         ],
       ),
       floatingActionButton: FloatingActionButton(
@@ -139,7 +98,7 @@ class _HomePageState extends State<HomePage> {
           Navigator.push(
             context,
             MaterialPageRoute(builder: (_) => const CreateCompany()),
-          ).then((_) => _refreshCompanyList());
+          ).then((_) => companyProvider.fetchCompanies());
         },
         child: const Icon(Icons.add),
       ),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:restapi_crud/screen/homepage.dart';
+import 'package:provider/provider.dart';
+import 'package:restapi_crud/providers/company_providers.dart';
 import 'package:restapi_crud/widgets/custom_button.dart';
-import 'package:restapi_crud/services/company_service.dart';
 import 'package:restapi_crud/model/company.dart';
 
 class CreateCompany extends StatefulWidget {
@@ -20,15 +20,15 @@ class _CreateCompanyState extends State<CreateCompany> {
 
   @override
   void initState() {
+    super.initState();
     if (widget.company != null) {
       _nameController.text = widget.company!.companyName;
       _addressController.text = widget.company!.companyAddress;
       _phoneController.text = widget.company!.companyNumber;
     }
-    super.initState();
   }
 
-  Future<Company?> createOrUpdateCompany() async {
+  Future<void> _createOrUpdateCompany() async {
     if (_key.currentState!.validate()) {
       Company newCompany = Company(
         id: widget.company == null ? 0 : widget.company!.id,
@@ -38,24 +38,18 @@ class _CreateCompanyState extends State<CreateCompany> {
         companyLogo: "",
       );
 
-      Company? result;
+      final companyProvider = Provider.of<CompanyProvider>(context, listen: false);
 
       if (widget.company == null) {
-        result = await createCompany(newCompany);
+        await companyProvider.addCompany(newCompany);
       } else {
-        result = await updateCompany(newCompany.id, newCompany);
+        await companyProvider.updateCompanyInfo(newCompany.id, newCompany);
       }
 
-      if (result != null && context.mounted) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const HomePage()),
-        );
+      if (context.mounted) {
+        Navigator.pop(context);
       }
-
-      return result;
     }
-
-    return null;
   }
 
   @override
@@ -63,54 +57,45 @@ class _CreateCompanyState extends State<CreateCompany> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: const Text("Add Company"),
+        title: Text(widget.company == null ? "Add Company" : "Update Company"),
       ),
       body: Form(
         key: _key,
         child: SingleChildScrollView(
+          padding: const EdgeInsets.all(8.0),
           child: Column(
             children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextFormField(
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return "Please enter company name";
-                    }
-                    return null;
-                  },
-                  controller: _nameController,
-                  decoration: const InputDecoration(
-                      labelText: "Name",
-                      hintText: "Enter the company name",
-                      border: OutlineInputBorder()),
+              TextFormField(
+                validator: (value) => value!.isEmpty ? "Please enter company name" : null,
+                controller: _nameController,
+                decoration: const InputDecoration(
+                  labelText: "Name",
+                  hintText: "Enter the company name",
+                  border: OutlineInputBorder(),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextFormField(
-                  controller: _addressController,
-                  decoration: const InputDecoration(
-                      labelText: "Address",
-                      hintText: "Enter the company address",
-                      border: OutlineInputBorder()),
+              const SizedBox(height: 10),
+              TextFormField(
+                controller: _addressController,
+                decoration: const InputDecoration(
+                  labelText: "Address",
+                  hintText: "Enter the company address",
+                  border: OutlineInputBorder(),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextFormField(
-                  controller: _phoneController,
-                  decoration: const InputDecoration(
-                      labelText: "Phone Number",
-                      hintText: "Enter the company phone number",
-                      border: OutlineInputBorder()),
+              const SizedBox(height: 10),
+              TextFormField(
+                controller: _phoneController,
+                decoration: const InputDecoration(
+                  labelText: "Phone Number",
+                  hintText: "Enter the company phone number",
+                  border: OutlineInputBorder(),
                 ),
               ),
+              const SizedBox(height: 20),
               CustomButton(
-                text: widget.company == null
-                    ? "Create Company"
-                    : "Update Company",
-                onPressed: createOrUpdateCompany,
+                text: widget.company == null ? "Create Company" : "Update Company",
+                onPressed: _createOrUpdateCompany,
               ),
             ],
           ),
