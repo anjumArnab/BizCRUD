@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import 'package:restapi_crud/providers/company_providers.dart';
 import 'package:restapi_crud/screen/homepage.dart';
 
-
 void main() {
   runApp(
     MultiProvider(
