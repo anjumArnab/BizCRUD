@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:restapi_crud/providers/company_providers.dart';
-import 'package:restapi_crud/screen/create_company.dart';
-import 'package:restapi_crud/widgets/company_card.dart';
+import '../providers/Business_providers.dart';
+import '../screen/create_business.dart';
+import '../widgets/business_card.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -17,16 +17,16 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    Provider.of<CompanyProvider>(context, listen: false).fetchCompanies();
+    Provider.of<BusinessProvider>(context, listen: false).fetchCompanies();
   }
 
   @override
   Widget build(BuildContext context) {
-    final companyProvider = Provider.of<CompanyProvider>(context);
+    final businessProvider = Provider.of<BusinessProvider>(context);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Business Info CRUD"),
+        title: const Text("BizCRUD"),
       ),
       body: Column(
         children: [
@@ -36,7 +36,7 @@ class _HomePageState extends State<HomePage> {
               controller: searchController,
               decoration: InputDecoration(
                 prefixIcon: Icon(Icons.search, color: Colors.grey[600]),
-                hintText: 'Search Company',
+                hintText: 'Search business',
                 filled: true,
                 fillColor: Colors.white,
                 border: OutlineInputBorder(
@@ -46,46 +46,44 @@ class _HomePageState extends State<HomePage> {
               ),
               onChanged: (value) {
                 if (value.isNotEmpty) {
-                  companyProvider.searchCompanies(value);
+                  businessProvider.searchCompanies(value);
                 } else {
-                  companyProvider.fetchCompanies();
+                  businessProvider.fetchCompanies();
                 }
               },
             ),
           ),
           Expanded(
-            child: companyProvider.isLoading
+            child: businessProvider.isLoading
                 ? const Center(child: CircularProgressIndicator())
-                : companyProvider.errorMessage.isNotEmpty
-                    ? Center(child: Text(companyProvider.errorMessage))
-                    : companyProvider.companies.isEmpty
-                        ? const Center(child: Text("No companies available."))
-                        : GridView.builder(
+                : businessProvider.errorMessage.isNotEmpty
+                    ? Center(child: Text(businessProvider.errorMessage))
+                    : businessProvider.companies.isEmpty
+                        ? const Center(child: Text("No business available."))
+                        : ListView.builder(
                             padding: const EdgeInsets.all(10),
-                            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2,
-                              crossAxisSpacing: 5,
-                              mainAxisSpacing: 5,
-                              childAspectRatio: 1,
-                            ),
-                            itemCount: companyProvider.companies.length,
+                            itemCount: businessProvider.companies.length,
                             itemBuilder: (context, index) {
-                              final company = companyProvider.companies[index];
+                              final business =
+                                  businessProvider.companies[index];
                               return GestureDetector(
-                                onLongPress: () => companyProvider.deleteCompanyById(company.id),
+                                onLongPress: () => businessProvider
+                                    .deleteBusinessById(business.id),
                                 onTap: () {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (_) => CreateCompany(company: company),
+                                      builder: (_) =>
+                                          CreateBusiness(business: business),
                                     ),
-                                  ).then((_) => companyProvider.fetchCompanies());
+                                  ).then(
+                                      (_) => businessProvider.fetchCompanies());
                                 },
-                                child: CompanyCard(
-                                  companyLogo: company.companyLogo,
-                                  companyName: company.companyName,
-                                  companyAddress: company.companyAddress,
-                                  companyNumber: company.companyNumber,
+                                child: BizCard(
+                                  businessLogo: business.businessLogo,
+                                  businessName: business.businessName,
+                                  businessAddress: business.businessAddress,
+                                  businessNumber: business.businessNumber,
                                 ),
                               );
                             },
@@ -97,8 +95,8 @@ class _HomePageState extends State<HomePage> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (_) => const CreateCompany()),
-          ).then((_) => companyProvider.fetchCompanies());
+            MaterialPageRoute(builder: (_) => const CreateBusiness()),
+          ).then((_) => businessProvider.fetchCompanies());
         },
         child: const Icon(Icons.add),
       ),
