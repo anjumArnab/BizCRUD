@@ -1,3 +1,3 @@
 # BizCRUD
 
-Flutter application REST API integration with CRUD method with `Provider` state management.
+Flutter CRUD app using REST API with `Provider` for state management.
