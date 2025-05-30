@@ -16,20 +16,21 @@ class Business {
   factory Business.fromJson(Map<String, dynamic> json) {
     return Business(
       id: json['id'] ?? 0,
-      businessName: json['name'] ?? "Unknown Name",
-      businessAddress: json['address'] ?? "Unknown Address",
-      businessNumber: json['phone'] ?? "No Phone",
-      businessLogo: json['logo'] ?? "https://logo.clearbit.com/example.com",
+      businessName: json['businessName'] ?? "Unknown Name",
+      businessAddress: json['businessAddress'] ?? "Unknown Address",
+      businessNumber: json['businessNumber'] ?? "No Phone",
+      businessLogo:
+          json['businessLogo'] ?? "https://logo.clearbit.com/example.com",
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'name': businessName,
-      'address': businessAddress,
-      'phone': businessNumber,
-      'logo': businessLogo,
+      'businessName': businessName,
+      'businessAddress': businessAddress,
+      'businessNumber': businessNumber,
+      'businessLogo': businessLogo,
     };
   }
 }
