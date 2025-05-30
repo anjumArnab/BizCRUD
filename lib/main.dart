@@ -6,10 +6,8 @@ import '../screen/homepage.dart';
 
 void main() {
   runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (context) => BusinessProvider()),
-      ],
+    ChangeNotifierProvider(
+      create: (context) => BusinessProvider(),
       child: const BizCRUD(),
     ),
   );
@@ -23,7 +21,10 @@ class BizCRUD extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'BizCRUD',
-      theme: ThemeData(textTheme: GoogleFonts.poppinsTextTheme()),
+      theme: ThemeData(
+        textTheme: GoogleFonts.poppinsTextTheme(),
+        scaffoldBackgroundColor: Colors.grey[50],
+      ),
       home: const HomePage(),
     );
   }
