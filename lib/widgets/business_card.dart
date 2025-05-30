@@ -5,6 +5,7 @@ class BizCard extends StatelessWidget {
   final String businessName;
   final String businessAddress;
   final String businessNumber;
+  final VoidCallback? onDelete;
 
   const BizCard({
     super.key,
@@ -12,6 +13,7 @@ class BizCard extends StatelessWidget {
     required this.businessName,
     required this.businessAddress,
     required this.businessNumber,
+    this.onDelete,
   });
 
   @override
@@ -98,10 +100,52 @@ class BizCard extends StatelessWidget {
           ),
         ],
       ),
-      trailing: const Icon(
-        Icons.arrow_forward_ios,
-        size: 16,
-        color: Colors.grey,
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (onDelete != null)
+            IconButton(
+              icon: const Icon(
+                Icons.delete,
+                size: 20,
+                color: Colors.red,
+              ),
+              onPressed: () {
+                // Show confirmation dialog
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: const Text('Delete Business'),
+                      content: Text(
+                          'Are you sure you want to delete $businessName?'),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.of(context).pop(),
+                          child: const Text('Cancel'),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                            onDelete!();
+                          },
+                          style: TextButton.styleFrom(
+                            foregroundColor: Colors.red,
+                          ),
+                          child: const Text('Delete'),
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
+            ),
+          const Icon(
+            Icons.arrow_forward_ios,
+            size: 16,
+            color: Colors.grey,
+          ),
+        ],
       ),
     );
   }

@@ -20,7 +20,7 @@ class BusinessProvider with ChangeNotifier {
     if (result != null) {
       _companies = result;
     } else {
-      _errorMessage = "Failed to load companies.";
+      _errorMessage = "Failed to load business.";
     }
     _isLoading = false;
     notifyListeners();

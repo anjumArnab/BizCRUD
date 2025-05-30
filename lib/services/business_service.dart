@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:http/http.dart' as http;
 import 'package:restapi_crud/model/business.dart';
 
-const String baseUrl = "https://retoolapi.dev/0KqRcK/Business";
+const String baseUrl = "https://retoolapi.dev/ETxI4A/business";
 
 Future<List<Business>?> getAllBusiness() async {
   try {
